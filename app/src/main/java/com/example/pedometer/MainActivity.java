@@ -97,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     Toast.makeText(MainActivity.this, "Número no válido", Toast.LENGTH_SHORT).show();
                 } else {
                     pasosObjetivos = Integer.valueOf(pasosInput.getText().toString());
-
                     pieChart.setCenterText(pasos + " /\n" + pasosObjetivos);
                     loadPieChartData();
                 }
@@ -166,7 +165,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 kmText.setText("Km: " + ((pasos / cm) / 10000.0));
             }
             if (pasosObjetivos != -1) {
-                pieChart.setCenterText(pasos + "/\n" + pasosObjetivos);
+                NumberFormat nf = new DecimalFormat("#0.000");
+                kmText.setText("Km: " + nf.format((pasos * cm) / 100000.0));
+                loadPieChartData();
+                pieChart.setCenterText(pasos + " /\n" + pasosObjetivos);
             }
 
             loadPieChartData();
@@ -211,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         pieChart.getDescription().setEnabled(false);
 
         Legend l = pieChart.getLegend();
-
         LegendEntry l1 = new LegendEntry("Pasos dados", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#00C49A"));
         LegendEntry l2 = new LegendEntry("Pasos restantes", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#F75B50"));
         LegendEntry[] array = new LegendEntry[2];
