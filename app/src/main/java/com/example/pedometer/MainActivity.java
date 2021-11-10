@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     pasosObjetivos = Integer.valueOf(pasosInput.getText().toString());
 
                     pieChart.setCenterText(pasos + " /\n" + pasosObjetivos);
+                    loadPieChartData();
                 }
             }
 
@@ -167,6 +168,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (pasosObjetivos != -1) {
                 pieChart.setCenterText(pasos + "/\n" + pasosObjetivos);
             }
+
+            loadPieChartData();
         }
     }
 
@@ -178,8 +181,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void loadPieChartData() {
 
         ArrayList<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(200, ""));
-        entries.add(new PieEntry(9800, ""));
+        entries.add(new PieEntry(pasos, ""));
+        entries.add(new PieEntry(pasosObjetivos, ""));
 
         ArrayList<Integer> colores = new ArrayList<>();
         colores.add(Color.parseColor("#00C49A"));
