@@ -126,7 +126,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingActivity.class);
+            startActivity(intent);
+            /*return true;*/
         }
 
         return super.onOptionsItemSelected(item);
