@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 } else {
                     pasosObjetivos = Integer.valueOf(pasosInput.getText().toString());
                     pieChart.setCenterText(pasos + " /\n" + pasosObjetivos);
+                    loadPieChartData();
                 }
             }
 
@@ -171,6 +172,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 loadPieChartData();
                 pieChart.setCenterText(pasos + " /\n" + pasosObjetivos);
             }
+
+            loadPieChartData();
         }
     }
 
