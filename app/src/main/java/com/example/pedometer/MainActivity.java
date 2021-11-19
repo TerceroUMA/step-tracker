@@ -28,6 +28,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,17 +45,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     SensorManager sensorManager;
-    TextView pasosText;
     TextView kmText;
-    EditText cmInput;
-    EditText pasosInput;
-    Button cmButton;
-    Button pasosButton;
     boolean running = false;
     int pasos;
-    int cm = -1;
-    int pasosObjetivos = - 1;
+    int cmZancada;
+    int  pasosObjetivos;
+    TextView numPasos;
     PieChart pieChart;
+    DictDbHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,47 +61,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        pasosText =  findViewById(R.id.numPasos);
-        kmText =  findViewById(R.id.kmText);
-        cmInput = findViewById(R.id.cmInput);
-        pasosInput = findViewById(R.id.pasosInput);
-        cmButton = findViewById(R.id.cmButton);
-        pasosButton = findViewById(R.id.pasosButton);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        dbHelper = new DictDbHelper(getApplicationContext());
 
+        numPasos =  findViewById(R.id.numPasos);
         pieChart = findViewById(R.id.pieChart);
+
+        List<Pair<String, String>> ls = dbHelper.getAjustes();
+        Pair<String, String> par = ls.get(ls.size()-1);
+
+        cmZancada = Integer.valueOf(par.first);
+        pasosObjetivos = Integer.valueOf(par.second);
+
         setupPieChart();
         loadPieChartData();
-
-        cmButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (cmInput == null || cmInput.getText().toString().equals("") || Integer.valueOf(cmInput.getText().toString()) < 0) {
-                    Toast.makeText(MainActivity.this, "Número no válido", Toast.LENGTH_SHORT).show();
-                } else {
-                    cm = Integer.valueOf(cmInput.getText().toString());
-
-                    NumberFormat nf = new DecimalFormat("#0.000");
-                    kmText.setText("Km: " + nf.format((pasos * cm) / 100000.0));
-                }
-            }
-        });
-
-        pasosButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (pasosInput == null || pasosInput.getText().toString().equals("") || Integer.valueOf(pasosInput.getText().toString()) < 0) {
-
-                    Toast.makeText(MainActivity.this, pasosInput.getText().toString(), Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this, "Número no válido", Toast.LENGTH_SHORT).show();
-                } else {
-                    pasosObjetivos = Integer.valueOf(pasosInput.getText().toString());
-                    pieChart.setCenterText(pasos + " /\n" + pasosObjetivos);
-                    loadPieChartData();
-                }
-            }
-
-
-        });
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED){ // Esto es para pedir permisos de actividad física
             //ask for permission
@@ -162,15 +133,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if (running) {
             pasos = (int) event.values[0];
-            pasosText.setText(String.valueOf(pasos));
-            if (cm != -1) {
-                kmText.setText("Km: " + ((pasos / cm) / 10000.0));
+            numPasos.setText(String.valueOf(pasos));
+            if ( cmZancada != -1) {
+                kmText.setText("Km: " + ((pasos / cmZancada) / 10000.0));
             }
             if (pasosObjetivos != -1) {
                 NumberFormat nf = new DecimalFormat("#0.000");
-                kmText.setText("Km: " + nf.format((pasos * cm) / 100000.0));
+                kmText.setText("Km: " + nf.format((pasos * cmZancada) / 100000.0));
                 loadPieChartData();
-                pieChart.setCenterText(pasos + " /\n" + pasosObjetivos);
+
             }
 
             loadPieChartData();
@@ -186,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         ArrayList<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(pasos, ""));
-        entries.add(new PieEntry(pasosObjetivos, ""));
+        entries.add(new PieEntry(pasosObjetivos - pasos, ""));
 
         ArrayList<Integer> colores = new ArrayList<>();
         colores.add(Color.parseColor("#00C49A"));
@@ -203,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         data.setValueTextColor(Color.TRANSPARENT);
 
         pieChart.setData(data);
+        pieChart.setCenterText(pasos + " /\n" + pasosObjetivos);
         pieChart.invalidate();
         pieChart.animateY(1400, Easing.EaseInOutQuad);
     }
