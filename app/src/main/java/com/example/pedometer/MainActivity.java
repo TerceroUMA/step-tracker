@@ -54,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     PieChart pieChart;
     DictDbHelper dbHelper;
 
+    Button segButton;
+    Button cronButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +83,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //ask for permission
             requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 0);
         }
+
+        segButton = findViewById(R.id.seguimientoButton);
+        cronButton = findViewById(R.id.cronometroButton);
+
+        segButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SeguimientoActivity.class);
+                startActivity(intent);            }
+        });
+
+        cronButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, CronometroActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
