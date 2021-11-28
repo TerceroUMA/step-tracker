@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         dbHelper = new DictDbHelper(getApplicationContext());
 
+        kmText = findViewById(R.id.kmText);
+
         numPasos =  findViewById(R.id.numPasos);
         pieChart = findViewById(R.id.pieChart);
 
