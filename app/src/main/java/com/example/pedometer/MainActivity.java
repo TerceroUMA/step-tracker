@@ -1,6 +1,8 @@
 package com.example.pedometer;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
+import com.example.pedometer.AlarmReceiver;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -40,7 +43,9 @@ import android.widget.Toast;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -68,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         dbHelper = new DictDbHelper(getApplicationContext());
 
         kmText = findViewById(R.id.kmText);
-
         numPasos =  findViewById(R.id.numPasos);
         pieChart = findViewById(R.id.pieChart);
 
@@ -80,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         setupPieChart();
         loadPieChartData();
+        setAlarm(getApplicationContext());
+
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED){ // Esto es para pedir permisos de actividad física
             //ask for permission
@@ -157,11 +163,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             pasos = (int) event.values[0];
             numPasos.setText(String.valueOf(pasos));
             if ( cmZancada != -1) {
-                kmText.setText("Km: " + ((pasos / cmZancada) / 10000.0));
+                kmText.setText("Distancia: " + ((pasos / cmZancada) / 10000.0) + " km");
             }
             if (pasosObjetivos != -1) {
                 NumberFormat nf = new DecimalFormat("#0.000");
-                kmText.setText("Km: " + nf.format((pasos * cmZancada) / 100000.0));
+                kmText.setText("Distancia: " + nf.format((pasos * cmZancada) / 100000.0) + " km");
                 loadPieChartData();
 
             }
@@ -216,5 +222,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         array[1] = l2;
         l.setCustom(array);
         l.setEnabled(true);
+    }
+
+    private void setAlarm(Context context){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getTimeZone("GMT+1"));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(context, AlarmReceiver.class);
+        i.putExtra("pasos", pasos);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
+
     }
 }
