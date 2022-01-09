@@ -1,4 +1,22 @@
 <resources>
-    <string name="app_name">Pedometer</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Podómetro</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="pasos">Pasos</string>
+    <string name="distancia">Distancia: </string>
+    <string name="km">km</string>
+    <string name="seguimiento">SEGUIMIENTO</string>
+    <string name="cronometro">CRONÓMETRO</string>
+    <string name="ver_pasos">Pasos</string>
+    <string name="reset">RESETEAR</string>
+    <string name="pasos_dados">Pasos dados</string>
+    <string name="pasos_restantes">Pasos restantes</string>
+    <string name="seguimiento_personal">Seguimiento personal</string>
+    <string name="contador_pasos">Contador de pasos</string>
+    <string name="texto_zancada">Escriba los cm de su zancada: </string>
+    <string name="texto_km">Escriba los pasos objetivo: </string>
+    <string name="guardar">GUARDAR</string>
+    <string name="volver">VOLVER</string>
+    <string name="error_sensor">No se encuentra el sensor</string>
+    <string name="dias">Días</string>
+    <string name="error_cm">Número no válido</string>
 </resources>

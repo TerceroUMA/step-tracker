@@ -86,10 +86,10 @@ public class SeguimientoActivity extends AppCompatActivity {
             diasLabel.add(String.valueOf(i));
         }
 
-        BarDataSet barDataSet = new BarDataSet(barEntryArrayList, "Seguimiento Personal");
+        BarDataSet barDataSet = new BarDataSet(barEntryArrayList, getResources().getString(R.string.seguimiento_personal));
         barDataSet.setColor(Color.BLUE);
         Description desc = new Description();
-        desc.setText("Días");
+        desc.setText(getResources().getString(R.string.dias));
         grafica.setDescription(desc);
         BarData barData = new BarData(barDataSet);
         grafica.setData(barData);

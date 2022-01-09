@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (countSensor != null) {
             sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_UI);
         } else {
-            Toast.makeText(this, "No se encuentra el sensor", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.error_sensor), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -163,11 +163,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             pasos = (int) event.values[0];
             numPasos.setText(String.valueOf(pasos));
             if ( cmZancada != -1) {
-                kmText.setText("Distancia: " + ((pasos / cmZancada) / 10000.0) + " km");
+                kmText.setText(getResources().getString(R.string.distancia) + ((pasos / cmZancada) / 10000.0) + getResources().getString(R.string.km));
             }
             if (pasosObjetivos != -1) {
                 NumberFormat nf = new DecimalFormat("#0.000");
-                kmText.setText("Distancia: " + nf.format((pasos * cmZancada) / 100000.0) + " km");
+                kmText.setText(getResources().getString(R.string.distancia) + nf.format((pasos * cmZancada) / 100000.0) + getResources().getString(R.string.km));
                 loadPieChartData();
             }
             loadPieChartData();
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         colores.add(Color.parseColor("#00C49A"));
         colores.add(Color.parseColor("#F75B50"));
 
-        PieDataSet dataset = new PieDataSet(entries, "Step counter");
+        PieDataSet dataset = new PieDataSet(entries, getResources().getString(R.string.contador_pasos));
         dataset.setColors(colores);
 
         PieData data = new PieData(dataset);
@@ -213,8 +213,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         pieChart.getDescription().setEnabled(false);
 
         Legend l = pieChart.getLegend();
-        LegendEntry l1 = new LegendEntry("Pasos dados", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#00C49A"));
-        LegendEntry l2 = new LegendEntry("Pasos restantes", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#F75B50"));
+        LegendEntry l1 = new LegendEntry(getResources().getString(R.string.pasos_dados), Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#00C49A"));
+        LegendEntry l2 = new LegendEntry(getResources().getString(R.string.pasos_restantes), Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#F75B50"));
         LegendEntry[] array = new LegendEntry[2];
         array[0] = l1;
         array[1] = l2;

@@ -51,7 +51,7 @@ public class SettingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if ((cmInput == null || cmInput.getText().toString().equals("") || Integer.valueOf(cmInput.getText().toString()) < 0 ) &&
                         (pasosInput == null || pasosInput.getText().toString().equals("") || Integer.valueOf(pasosInput.getText().toString()) < 0)) {
-                    Toast.makeText(SettingActivity.this, "Número no válido", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingActivity.this, getResources().getString(R.string.error_cm), Toast.LENGTH_SHORT).show();
                 } else {
                     // cm = Integer.valueOf(cmInput.getText().toString());
                     // NumberFormat nf = new DecimalFormat("#0.000");
@@ -95,7 +95,7 @@ public class SettingActivity extends AppCompatActivity {
         colores.add(Color.parseColor("#00C49A"));
         colores.add(Color.parseColor("#F75B50"));
 
-        PieDataSet dataset = new PieDataSet(entries, "Step counter");
+        PieDataSet dataset = new PieDataSet(entries, getResources().getString(R.string.contador_pasos));
         dataset.setColors(colores);
 
         PieData data = new PieData(dataset);
@@ -118,8 +118,8 @@ public class SettingActivity extends AppCompatActivity {
         pieChart.getDescription().setEnabled(false);
 
         Legend l = pieChart.getLegend();
-        LegendEntry l1 = new LegendEntry("Pasos dados", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#00C49A"));
-        LegendEntry l2 = new LegendEntry("Pasos restantes", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#F75B50"));
+        LegendEntry l1 = new LegendEntry(getResources().getString(R.string.pasos_dados), Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#00C49A"));
+        LegendEntry l2 = new LegendEntry(getResources().getString(R.string.pasos_restantes), Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#F75B50"));
         LegendEntry[] array = new LegendEntry[2];
         array[0] = l1;
         array[1] = l2;
