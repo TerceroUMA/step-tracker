@@ -4,8 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Pair;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,8 +96,14 @@ public class DictDbHelper extends SQLiteOpenHelper {
   public void agregarAjustes(int cm_zancada, int pasos_objetivos) {
 
     SQLiteDatabase db = getWritableDatabase();
+
     if (db != null) {
-      db.execSQL(String.format("INSERT INTO AJUSTES VALUES('%d', '%s')", cm_zancada, pasos_objetivos));
+      // String query = String.format("INSERT INTO AJUSTES VALUES('%d', '%s')", cm_zancada, pasos_objetivos);
+      String query = String.format("INSERT INTO AJUSTES VALUES(?,?)");
+      SQLiteStatement ps = db.compileStatement(query);
+      ps.bindDouble(1, cm_zancada);
+      ps.bindString(2, String.valueOf(pasos_objetivos));
+      ps.executeInsert();
     }
   }
 

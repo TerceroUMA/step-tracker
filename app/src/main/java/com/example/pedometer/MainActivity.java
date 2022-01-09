@@ -169,9 +169,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 NumberFormat nf = new DecimalFormat("#0.000");
                 kmText.setText("Distancia: " + nf.format((pasos * cmZancada) / 100000.0) + " km");
                 loadPieChartData();
-
             }
-
             loadPieChartData();
         }
     }
@@ -228,8 +226,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeZone(TimeZone.getTimeZone("GMT+1"));
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 18);
+        calendar.set(Calendar.MINUTE, 17);
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, AlarmReceiver.class);
@@ -238,4 +236,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
 
     }
+
+    /*
+    public static void showToast(){
+        Toast.makeText(MainActivity, "Alarma", Toast.LENGTH_SHORT).show();
+    }
+     */
+
 }

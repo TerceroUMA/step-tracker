@@ -5,7 +5,9 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.util.Pair;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.List;
@@ -19,6 +21,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent){
 
+        // Toast.makeText(MainActivity.class, "Número no válido", Toast.LENGTH_SHORT).show();
+        System.out.println("Alarma recibida");
+
         dbHelper = new DictDbHelper(context.getApplicationContext());
         List<Pair<String, Integer>> dias = dbHelper.getDias();
         int pasosDiariosTotales = 0;
@@ -26,11 +31,13 @@ public class AlarmReceiver extends BroadcastReceiver {
             pasosDiariosTotales += dia.second;
         }
 
+        System.out.print(intent.getIntExtra("pasos", -1));
         pasosDiarios = intent.getIntExtra("pasos", 0) - pasosDiariosTotales;
-        int hora = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+
+        int dia = Calendar.getInstance().get(Calendar.DAY_OF_MONTH - 20);
         int mes = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
-        dbHelper.agregarDia(String.valueOf(hora), String.valueOf(mes), pasosDiarios);
+        dbHelper.agregarDia(String.valueOf(dia), String.valueOf(mes), pasosDiarios);
 
     }
 

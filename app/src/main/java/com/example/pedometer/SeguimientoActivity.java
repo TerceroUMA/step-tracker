@@ -73,6 +73,9 @@ public class SeguimientoActivity extends AppCompatActivity {
         barEntryArrayList = new ArrayList<>();
         diasLabel = new ArrayList<>();
 
+        pasosButton = findViewById(R.id.pasosButton);
+        croButton = findViewById(R.id.cronometroButton);
+
         dias = dbHelper.getDias();
 
         for(int i=0; i<dias.size(); i++){
