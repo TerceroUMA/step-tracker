@@ -52,12 +52,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     SensorManager sensorManager;
     TextView kmText;
     boolean running = false;
-    int pasos;
+    static int pasos;
     int cmZancada;
     int  pasosObjetivos;
     TextView numPasos;
     PieChart pieChart;
     DictDbHelper dbHelper;
+    static boolean registroHecho = false;
 
     Button segButton;
     Button cronButton;
@@ -84,8 +85,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         setupPieChart();
         loadPieChartData();
-        setAlarm(getApplicationContext());
-
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED){ // Esto es para pedir permisos de actividad física
             //ask for permission
@@ -161,6 +160,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if (running) {
             pasos = (int) event.values[0];
+
+            if(!registroHecho){
+                setAlarm(getApplicationContext());
+                registroHecho = true;
+            }
+
             numPasos.setText(String.valueOf(pasos));
             if ( cmZancada != -1) {
                 kmText.setText(getResources().getString(R.string.distancia) + ((pasos / cmZancada) / 10000.0) + getResources().getString(R.string.km));
@@ -225,22 +230,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void setAlarm(Context context){
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(TimeZone.getTimeZone("GMT+1"));
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+1);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, AlarmReceiver.class);
         i.putExtra("pasos", pasos);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
+        am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
 
     }
-
-    /*
-    public static void showToast(){
-        Toast.makeText(MainActivity, "Alarma", Toast.LENGTH_SHORT).show();
-    }
-     */
-
 }

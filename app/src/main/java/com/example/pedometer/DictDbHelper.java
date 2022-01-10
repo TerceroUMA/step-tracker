@@ -68,7 +68,12 @@ public class DictDbHelper extends SQLiteOpenHelper {
 
     SQLiteDatabase db = getWritableDatabase();
     if (db != null) {
-      db.execSQL(String.format("INSERT INTO REGISTROS_DIA VALUES('%s', '%s', '%d')", dia, mes, pasos));
+      String query = "INSERT INTO REGISTROS_DIA VALUES(?,?,?)";
+      SQLiteStatement ps = db.compileStatement(query);
+      ps.bindString(1, dia);
+      ps.bindString(2, mes);
+      ps.bindDouble(3, pasos);
+      ps.executeInsert();
     }
   }
 

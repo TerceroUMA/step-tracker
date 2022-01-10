@@ -82,8 +82,8 @@ public class SeguimientoActivity extends AppCompatActivity {
             String fecha = dias.get(i).first;
             Integer pasos = dias.get(i).second;
 
-            barEntryArrayList.add(new BarEntry(i, i));
-            diasLabel.add(String.valueOf(i));
+            barEntryArrayList.add(new BarEntry(i, pasos));
+            diasLabel.add(String.valueOf(fecha));
         }
 
         BarDataSet barDataSet = new BarDataSet(barEntryArrayList, getResources().getString(R.string.seguimiento_personal));
@@ -101,7 +101,7 @@ public class SeguimientoActivity extends AppCompatActivity {
         ejeX.setDrawAxisLine(false);
         ejeX.setGranularity(1f);
         ejeX.setLabelCount(diasLabel.size());
-        ejeX.setLabelRotationAngle(270);
+        ejeX.setLabelRotationAngle(0);
         grafica.animateY(2000);
         grafica.invalidate();
 
@@ -118,11 +118,6 @@ public class SeguimientoActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    private void setupLineChart(){
-
-
     }
 
 }
