@@ -36,7 +36,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         pasosDiarios = intent.getIntExtra("pasos", 0) - pasosDiariosTotales;
 
-        int dia = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        int dia = Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1;
         int mes = (Calendar.getInstance().get(Calendar.MONTH) + 1);
 
         dbHelper.agregarDia(String.valueOf(dia), String.valueOf(mes), pasosDiarios);
