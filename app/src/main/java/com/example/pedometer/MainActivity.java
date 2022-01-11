@@ -1,6 +1,8 @@
 package com.example.pedometer;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
+import com.example.pedometer.AlarmReceiver;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -40,20 +43,22 @@ import android.widget.Toast;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     SensorManager sensorManager;
     TextView kmText;
     boolean running = false;
-    int pasos;
+    static int pasos;
     int cmZancada;
     int  pasosObjetivos;
     TextView numPasos;
     PieChart pieChart;
     DictDbHelper dbHelper;
-
+    static boolean registroHecho = false;
     Button segButton;
     Button cronButton;
 
@@ -68,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         dbHelper = new DictDbHelper(getApplicationContext());
 
         kmText = findViewById(R.id.kmText);
-
         numPasos =  findViewById(R.id.numPasos);
         pieChart = findViewById(R.id.pieChart);
 
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         cmZancada = Integer.valueOf(par.first);
         pasosObjetivos = Integer.valueOf(par.second);
 
+        // Se crea la gráfica y se cargan los datos.
         setupPieChart();
         loadPieChartData();
 
@@ -86,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 0);
         }
 
+        // Se añaden eventListeners a los botones para cambiar de página
         segButton = findViewById(R.id.seguimientoButton);
         cronButton = findViewById(R.id.cronometroButton);
 
@@ -137,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (countSensor != null) {
             sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_UI);
         } else {
-            Toast.makeText(this, "No se encuentra el sensor", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.error_sensor), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -153,19 +159,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        if (running) {
+        // Se comprueba si estamos en la aplicación y el evento es del sensor step counter.
+        if (running && event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             pasos = (int) event.values[0];
+
+            // Se programa una alarma si no está ya programada
+            if(!registroHecho){
+                setAlarm(getApplicationContext());
+                registroHecho = true;
+            }
+
+            // Actualiza los valores de los textViews y la gráfica
             numPasos.setText(String.valueOf(pasos));
             if ( cmZancada != -1) {
-                kmText.setText("Km: " + ((pasos / cmZancada) / 10000.0));
+                kmText.setText(getResources().getString(R.string.distancia) + " " + ((pasos / cmZancada) / 10000.0) + " " + getResources().getString(R.string.km));
             }
             if (pasosObjetivos != -1) {
                 NumberFormat nf = new DecimalFormat("#0.000");
-                kmText.setText("Km: " + nf.format((pasos * cmZancada) / 100000.0));
+                kmText.setText(getResources().getString(R.string.distancia) + " " + nf.format((pasos * cmZancada) / 100000.0) + " " + getResources().getString(R.string.km));
                 loadPieChartData();
-
             }
-
             loadPieChartData();
         }
     }
@@ -177,6 +190,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void loadPieChartData() {
 
+        // Carga los valores de la gráfica
+
         ArrayList<PieEntry> entries = new ArrayList<>();
         entries.add(new PieEntry(pasos, ""));
         entries.add(new PieEntry(pasosObjetivos - pasos, ""));
@@ -185,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         colores.add(Color.parseColor("#00C49A"));
         colores.add(Color.parseColor("#F75B50"));
 
-        PieDataSet dataset = new PieDataSet(entries, "Step counter");
+        PieDataSet dataset = new PieDataSet(entries, getResources().getString(R.string.contador_pasos));
         dataset.setColors(colores);
 
         PieData data = new PieData(dataset);
@@ -202,6 +217,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void setupPieChart() {
+
+        // Crea una gráfica de pastel customizada
+
         pieChart.setDrawHoleEnabled(true);
         pieChart.setUsePercentValues(true);
         pieChart.setCenterTextColor(Color.BLACK);
@@ -209,12 +227,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         pieChart.getDescription().setEnabled(false);
 
         Legend l = pieChart.getLegend();
-        LegendEntry l1 = new LegendEntry("Pasos dados", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#00C49A"));
-        LegendEntry l2 = new LegendEntry("Pasos restantes", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#F75B50"));
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        LegendEntry l1 = new LegendEntry(getResources().getString(R.string.pasos_dados), Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#00C49A"));
+        LegendEntry l2 = new LegendEntry(getResources().getString(R.string.pasos_restantes), Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#F75B50"));
         LegendEntry[] array = new LegendEntry[2];
         array[0] = l1;
         array[1] = l2;
         l.setCustom(array);
         l.setEnabled(true);
+    }
+
+    private void setAlarm(Context context){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Calendar fechaActual = Calendar.getInstance();
+
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(context, AlarmReceiver.class);
+        i.putExtra("dia", fechaActual.get(Calendar.DAY_OF_MONTH));
+        i.putExtra("mes", fechaActual.get(Calendar.MONTH) + 1);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
+        am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pi);
+
     }
 }

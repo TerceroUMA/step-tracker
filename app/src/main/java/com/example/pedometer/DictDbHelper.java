@@ -4,8 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Pair;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,15 +68,47 @@ public class DictDbHelper extends SQLiteOpenHelper {
 
     SQLiteDatabase db = getWritableDatabase();
     if (db != null) {
-      db.execSQL(String.format("INSERT INTO REGISTROS_DIA VALUES('%s', '%s', '%d')", dia, mes, pasos));
+      String query = "INSERT INTO REGISTROS_DIA VALUES(?,?,?)";
+      SQLiteStatement ps = db.compileStatement(query);
+      ps.bindString(1, dia);
+      ps.bindString(2, mes);
+      ps.bindDouble(3, pasos);
+      ps.executeInsert();
     }
+  }
+
+  public List<Pair<String, Integer>> getDias(){
+
+    SQLiteDatabase db = getReadableDatabase();
+    List<Pair<String, Integer>> lista = new ArrayList<>();
+    Cursor cursor = db.rawQuery("SELECT * FROM REGISTROS_DIA", null);
+    try{
+      while(cursor.moveToNext()){
+        String dia = cursor.getString((cursor.getColumnIndex("DIA")));
+        String mes = cursor.getString((cursor.getColumnIndex("MES")));
+        Integer pasos = cursor.getInt(cursor.getColumnIndex("PASOS_DADOS"));
+
+        String fecha = dia + "/" + mes;
+
+        lista.add(new Pair<String, Integer>(fecha, pasos));
+      }
+    } finally {
+      cursor.close();
+    }
+    return lista;
   }
 
   public void agregarAjustes(int cm_zancada, int pasos_objetivos) {
 
     SQLiteDatabase db = getWritableDatabase();
+
     if (db != null) {
-      db.execSQL(String.format("INSERT INTO AJUSTES VALUES('%d', '%s')", cm_zancada, pasos_objetivos));
+      // String query = String.format("INSERT INTO AJUSTES VALUES('%d', '%s')", cm_zancada, pasos_objetivos);
+      String query = String.format("INSERT INTO AJUSTES VALUES(?,?)");
+      SQLiteStatement ps = db.compileStatement(query);
+      ps.bindDouble(1, cm_zancada);
+      ps.bindString(2, String.valueOf(pasos_objetivos));
+      ps.executeInsert();
     }
   }
 

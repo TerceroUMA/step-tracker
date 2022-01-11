@@ -49,9 +49,10 @@ public class SettingActivity extends AppCompatActivity {
 
         ajustesButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                //comprueba si los inputs son correctos, y lanza una excepción si no lo son
                 if ((cmInput == null || cmInput.getText().toString().equals("") || Integer.valueOf(cmInput.getText().toString()) < 0 ) &&
                         (pasosInput == null || pasosInput.getText().toString().equals("") || Integer.valueOf(pasosInput.getText().toString()) < 0)) {
-                    Toast.makeText(SettingActivity.this, "Número no válido", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingActivity.this, getResources().getString(R.string.error_cm), Toast.LENGTH_SHORT).show();
                 } else {
                     // cm = Integer.valueOf(cmInput.getText().toString());
                     // NumberFormat nf = new DecimalFormat("#0.000");
@@ -66,6 +67,8 @@ public class SettingActivity extends AppCompatActivity {
                     dbHelper.agregarAjustes(cm, pasosObjetivos);
                     List<Pair<String, String>> ls = dbHelper.getAjustes();
                     Pair<String, String> par = ls.get(ls.size()-1);
+
+                    Toast.makeText(SettingActivity.this, getResources().getString(R.string.ajustes_guardados), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -85,45 +88,4 @@ public class SettingActivity extends AppCompatActivity {
 
     }
 
-    private void loadPieChartData() {
-
-        ArrayList<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(pasos, ""));
-        entries.add(new PieEntry(pasosObjetivos - pasos, ""));
-
-        ArrayList<Integer> colores = new ArrayList<>();
-        colores.add(Color.parseColor("#00C49A"));
-        colores.add(Color.parseColor("#F75B50"));
-
-        PieDataSet dataset = new PieDataSet(entries, "Step counter");
-        dataset.setColors(colores);
-
-        PieData data = new PieData(dataset);
-        data.setDrawValues(true);
-        data.setValueFormatter(new PercentFormatter(pieChart));
-        data.setValueTextSize(12f);
-        /*data.setValueTextColor(Color.BLACK);*/
-        data.setValueTextColor(Color.TRANSPARENT);
-
-        pieChart.setData(data);
-        pieChart.invalidate();
-        pieChart.animateY(1400, Easing.EaseInOutQuad);
-    }
-
-    private void setupPieChart() {
-        pieChart.setDrawHoleEnabled(true);
-        pieChart.setUsePercentValues(true);
-        pieChart.setCenterTextColor(Color.BLACK);
-        pieChart.setCenterTextSize(14);
-        pieChart.getDescription().setEnabled(false);
-
-        Legend l = pieChart.getLegend();
-        LegendEntry l1 = new LegendEntry("Pasos dados", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#00C49A"));
-        LegendEntry l2 = new LegendEntry("Pasos restantes", Legend.LegendForm.CIRCLE, 10f, 2f, null, Color.parseColor("#F75B50"));
-        LegendEntry[] array = new LegendEntry[2];
-        array[0] = l1;
-        array[1] = l2;
-        l.setCustom(array);
-        l.setEnabled(true);
-    }
 }

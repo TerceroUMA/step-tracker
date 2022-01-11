@@ -32,6 +32,9 @@
             android:name=".SettingActivity"
             android:label="settings"
             android:theme="@style/AppTheme.NoActionBar" />
+        <receiver
+            android:process=":remote"
+            android:name=".AlarmReceiver" />
     </application>
 
 </manifest>
