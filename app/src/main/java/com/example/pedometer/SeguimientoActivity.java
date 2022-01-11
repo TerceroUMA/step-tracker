@@ -56,25 +56,50 @@ public class SeguimientoActivity extends AppCompatActivity {
     ArrayList<BarEntry> barEntryArrayList;
     ArrayList<String> diasLabel;
     List<Pair<String, Integer>> dias;
-
     DictDbHelper dbHelper;
-
     Button pasosButton;
     Button croButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_seguimiento);
 
         dbHelper = new DictDbHelper(getApplicationContext());
+
+        // Se comprueba si hay registros o no y se asigna una view
+        if(dbHelper.getDias().isEmpty()){
+            setContentView(R.layout.activity_seguimiento_vacia);
+        } else{
+            setContentView(R.layout.activity_seguimiento);
+            setupGrafica();
+        }
+
+        // Se añaden eventListeners a los botones para cambiar de página
+        pasosButton = findViewById(R.id.pasosButton);
+        croButton = findViewById(R.id.cronometroButton);
+
+        pasosButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(SeguimientoActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        croButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(SeguimientoActivity.this, CronometroActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void setupGrafica(){
+
+        // Crea una gráfica de barras customizada cargando los datos del registro personal existentes en la BD.
 
         grafica = findViewById(R.id.barChart);
         barEntryArrayList = new ArrayList<>();
         diasLabel = new ArrayList<>();
-
-        pasosButton = findViewById(R.id.pasosButton);
-        croButton = findViewById(R.id.cronometroButton);
 
         dias = dbHelper.getDias();
 
@@ -86,7 +111,7 @@ public class SeguimientoActivity extends AppCompatActivity {
             diasLabel.add(String.valueOf(fecha));
         }
 
-        BarDataSet barDataSet = new BarDataSet(barEntryArrayList, getResources().getString(R.string.seguimiento_personal));
+        BarDataSet barDataSet = new BarDataSet(barEntryArrayList, getResources().getString(R.string.pasos));
         barDataSet.setColor(Color.BLUE);
         Description desc = new Description();
         desc.setText(getResources().getString(R.string.dias));
@@ -105,19 +130,6 @@ public class SeguimientoActivity extends AppCompatActivity {
         grafica.animateY(2000);
         grafica.invalidate();
 
-        pasosButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent intent = new Intent(SeguimientoActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        croButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent intent = new Intent(SeguimientoActivity.this, CronometroActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
 }

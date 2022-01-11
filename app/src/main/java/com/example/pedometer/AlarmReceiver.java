@@ -17,13 +17,14 @@ import java.util.TimeZone;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
+    // Esta clase representa el recibidor de una alarma, que ejecuta el código en onReceive() cuando la alarma puesta en
+    // setAlarm() de MainActivity hace trigger.
+
     DictDbHelper dbHelper;
     int pasosDiarios;
 
     @Override
     public void onReceive(Context context, Intent intent){
-
-        // Toast.makeText(MainActivity.class, "Número no válido", Toast.LENGTH_SHORT).show();
 
         dbHelper = new DictDbHelper(context);
         List<Pair<String, Integer>> dias = dbHelper.getDias();
@@ -31,16 +32,15 @@ public class AlarmReceiver extends BroadcastReceiver {
         for(Pair<String, Integer> dia : dias){
             pasosDiariosTotales += dia.second;
         }
+        // Se calculan los pasos que se han dado en el día pasado por parámetros.
+        pasosDiarios = MainActivity.pasos - pasosDiariosTotales;
+        String dia = intent.getStringExtra("dia");
+        String mes = intent.getStringExtra("mes");
 
-        Log.d("Alarma", "pasosDiariosTotales: " + pasosDiariosTotales + "\n pasos sensor: " + intent.getIntExtra("pasos", -1));
+        // Se añade el registro en la BD.
+        dbHelper.agregarDia(dia, mes, pasosDiarios);
 
-        pasosDiarios = intent.getIntExtra("pasos", 0) - pasosDiariosTotales;
-
-        int dia = Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1;
-        int mes = (Calendar.getInstance().get(Calendar.MONTH) + 1);
-
-        dbHelper.agregarDia(String.valueOf(dia), String.valueOf(mes), pasosDiarios);
-
+        // Indica que podemos setear otra alarma para el día siguiente.
         MainActivity.registroHecho = false;
     }
 

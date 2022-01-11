@@ -20,4 +20,6 @@
     <string name="error_sensor">Sensor not found</string>
     <string name="dias">Days</string>
     <string name="error_cm">Invalid number</string>
+    <string name="no_datos">There is no personal registers yet</string>
+    <string name="ajustes_guardados">Options have been saved. Press RETURN.</string>
 </resources>

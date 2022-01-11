@@ -19,4 +19,6 @@
     <string name="error_sensor">No se encuentra el sensor</string>
     <string name="dias">Días</string>
     <string name="error_cm">Número no válido</string>
+    <string name="no_datos">No hay registros personales todavía</string>
+    <string name="ajustes_guardados">Se han guardado los ajustes. Pulse VOLVER.</string>
 </resources>
